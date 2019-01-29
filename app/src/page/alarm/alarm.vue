@@ -1,6 +1,6 @@
  <template>
   <div class="rating_page">
-        <head-top head-title="数据统计" go-back='true'></head-top>
+        <head-top head-title="预警设置" go-back='true'></head-top>
         <section v-if="userInfo">
             <section class="vip_prerogative">
                 <router-link to="/vipcard/vipDescription" class="header_style">
@@ -40,7 +40,7 @@
                 <section class="apply_vip_buy">
                     <div class="apply_vip_buy_left">
                         <span>1个月</span>
-                        <span> ¥20</span>
+                        <span>¥20</span>
                     </div>
                     <div class="apply_vip_buy_right" @click="buyCart">购买</div>
                 </section>

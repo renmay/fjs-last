@@ -9,7 +9,7 @@
       </router-link>
       <router-link to="/home" slot="msite-title" class="msite_title">
         <span class="title_text ellipsis">{{msiteTitle}}</span>
-      </router-link>c
+      </router-link>
     </head-top>
 
     <nav class="msite_nav">
@@ -22,7 +22,7 @@
             签到
           </div>
         </router-link>
-        <router-link to="/vipcard" class="area_type_item">
+        <router-link to="/statistics" class="area_type_item">
           <div class="area_type_img">
             <img src="../../images/areaType/area_icon2.png" alt="">
           </div>
@@ -38,7 +38,7 @@
             设备管理
           </div>
         </router-link>
-        <router-link to="/vipcard" class="area_type_item">
+        <router-link to="/alarm" class="area_type_item">
           <div class="area_type_img">
             <img src="../../images/areaType/area_icon4.png" alt="">
           </div>
@@ -46,7 +46,7 @@
             预警设置
           </div>
         </router-link>
-        <router-link to="/vipcard" class="area_type_item">
+        <router-link to="/plant" class="area_type_item">
           <div class="area_type_img">
             <img src="../../images/areaType/area_icon5.png" alt="">
           </div>

@@ -1,199 +1,406 @@
 <template>
-    <div>
-    	<head-top signin-up='msite'>
-    		<router-link :to="'/search/geohash'" class="link_search" slot="search">
-	    		<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
-	    			<circle cx="8" cy="8" r="7" stroke="rgb(255,255,255)" stroke-width="1" fill="none"/>
-	    			<line x1="14" y1="14" x2="20" y2="20" style="stroke:rgb(255,255,255);stroke-width:2"/>
-	    		</svg>
-    		</router-link>
-			<router-link to="/home" slot="msite-title" class="msite_title">
-				<span class="title_text ellipsis">{{msiteTitle}}</span>
-			</router-link>
-    	</head-top>
-    	<nav class="msite_nav">
-    		<div class="swiper-container" v-if="foodTypes.length">
-		        <div class="swiper-wrapper">
-		            <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
-	            		<router-link :to="{path: '/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId(foodItem.link)}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
-	            			<figure>
-	            				<img :src="imgBaseUrl + foodItem.image_url">
-	            				<figcaption>{{foodItem.title}}</figcaption>
-	            			</figure>
-	            		</router-link>
-		            </div>
-		        </div>
-		        <div class="swiper-pagination"></div>
-		    </div>
-		    <img src="../../images/fl.svg" class="fl_back animation_opactiy" v-else>
-    	</nav>
-    	<div class="shop_list_container">
-	    	<header class="shop_header">
-	    		<svg class="shop_icon">
-	    			<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shop"></use>
-	    		</svg>
-	    		<span class="shop_header_title">附近商家</span>
-	    	</header>
-	    	<shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
-    	</div>
-    	<foot-guide></foot-guide>
+  <div>
+    <head-top head-title="资讯头条" class="top_bar"></head-top>
+    <!--分类导航-->
+    <div id="indexHeader">
+      <nav>
+        <div class="nav_ul">
+          <a href='javascript:;' :class='{active: currentIndex === -1}' @click.stop="first()">推荐</a>
+          <a href='javascript:;' v-for="(item,index) in newsCatListData" :class='{active: currentIndex === item.id}' @click.stop="navClick(item.id)" :key="index">{{item.title}}</a>
+        </div>
+      </nav>
     </div>
+    <div class="news-list">
+      <div  v-for="item in newsListData" @click="showDetail(item)">
+        <news-item  :data="item"></news-item>
+      </div>
+    </div>
+    <foot-guide></foot-guide>
+  </div>
 </template>
 
+
 <script>
-import {mapMutations} from 'vuex'
-// import {imgBaseUrl} from 'src/config/env'
-import headTop from 'src/components/header/head'
-import footGuide from 'src/components/footer/footGuide'
-import shopList from 'src/components/common/shoplist'
-import {msiteAddress, msiteFoodTypes, cityGuess} from 'src/service/getData'
-import 'src/plugins/swiper.min.js'
-import 'src/style/swiper.min.css'
+  import {mapState, mapMutations} from 'vuex'
+  import {getNewsList, getNewsCatList} from "../../service/getData";
+  import headTop from 'src/components/header/head'
+  import footGuide from 'src/components/footer/footGuide'
+  import 'src/plugins/swiper.min.js'
+  import 'src/style/swiper.min.css'
+  import {showBack, animate} from 'src/config/mUtils'
+  import {getStore, setStore} from "../../config/mUtils";
+  import newsItem from 'src/components/news/news-item'
 
-export default {
-	data(){
-        return {
-        	geohash: '', // city页面传递过来的地址geohash
-            msiteTitle: '请选择地址...', // msite页面头部标题
-            foodTypes: [], // 食品分类列表
-            hasGetData: false, //是否已经获取地理位置数据，成功之后再获取商铺列表信息
-            imgBaseUrl: 'https://fuss10.elemecdn.com', //图片域名地址
-        }
-    },
-    async beforeMount(){
-		if (!this.$route.query.geohash) {
-			const address = await cityGuess();
-			this.geohash = address.latitude + ',' + address.longitude;
-		}else{
-			this.geohash = this.$route.query.geohash
-		}
-		//保存geohash 到vuex
-		this.SAVE_GEOHASH(this.geohash);
-    	//获取位置信息
-    	let res = await msiteAddress(this.geohash);
-    	this.msiteTitle = res.name;
-    	// 记录当前经度纬度
-    	this.RECORD_ADDRESS(res);
+  export default {
 
-    	this.hasGetData = true;
+    props: ['itemJson'],
+    data(){
+      return {
+        currentIndex: -1,
+        newsListData: [],
+        newsCatListData: [],
+        newsCatId: '',
+        geohash: '', // city页面传递过来的地址geohash
+        newsTitle: '请选择地址...', // news页面头部标题
+        foodTypes: [], // 食品分类列表
+        hasGetData: false, //是否已经获取地理位置数据，成功之后再获取商铺列表信息
+        imgBaseUrl: 'https://fuss10.elemecdn.com', //图片域名地址
+      }
     },
     mounted(){
-        //获取导航食品类型列表
-       	msiteFoodTypes(this.geohash).then(res => {
-       		let resLength = res.length;
-       		let resArr = [...res]; // 返回一个新的数组
-       		let foodArr = [];
-    		for (let i = 0, j = 0; i < resLength; i += 8, j++) {
-    			foodArr[j] = resArr.splice(0, 8);
-    		}
-    		this.foodTypes = foodArr;
-        }).then(() => {
-        	//初始化swiper
-        	new Swiper('.swiper-container', {
-		        pagination: '.swiper-pagination',
-		        loop: true
-		    });
-        })
+      this.initData();
     },
     components: {
-    	headTop,
-    	shopList,
-    	footGuide,
+      headTop,
+      footGuide,
+      newsItem,
     },
     computed: {
-
-    },
-    methods: {
-    	...mapMutations([
-    		'RECORD_ADDRESS', 'SAVE_GEOHASH'
-    	]),
-    	// 解码url地址，求去restaurant_category_id值
-    	getCategoryId(url){
-    		let urlData = decodeURIComponent(url.split('=')[1].replace('&target_name',''));
-    		if (/restaurant_category_id/gi.test(urlData)) {
-    			return JSON.parse(urlData).restaurant_category_id.id
-    		}else{
-    			return ''
-    		}
-    	}
     },
     watch: {
-
+      navClick(id){
+        this.slideTo(id)
+      }
+    },
+    methods: {
+      ...mapMutations([
+        'SAVE_NEWS'
+      ]),
+      url(item) {
+        return `/news/newsDetail?id=${item.id}`
+      },
+      async initData() {
+        //获取数据
+        let data = await getNewsCatList();
+        this.newsCatListData = data.list;
+        let newData = await getNewsList();
+        this.newsListData = newData.list;
+        //开始监听scrollTop的值，达到一定程度后显示返回顶部按钮
+        showBack(status => {
+          this.showBackStatus = status;
+        });
+      },
+      async first(){
+        this.currentIndex = -1
+        this.initData()
+      },
+      async navClick(id){
+        // 通过传来的item的id去获取新的newList数据
+        let data = await getNewsList(id);
+        this.newsListData = data.list;
+        //改变当前目录下标，匹配样式
+        this.currentIndex = id
+      },
+      slideTo(index) {
+        this.$nextTick(() => {
+          let _container = $('.nav_ul')           // 获取滚动容器元素
+          let _column = $('.nav_ul a').eq(index)  // 获取当前active栏目元素
+          if (_column) {
+            let move    // 最终滚动值
+            let _container_width = _container.width()               // 容器宽度
+            let _container_left = _container.scrollLeft()           // 容器当前滚动条的值
+            let _column_width = _column.width()                     // 栏目宽度
+            let _column_left = _column.position().left              // 栏目距离屏幕左边的距离
+            let midWidth = (_container_width - _column_width) / 2   // 屏幕中心线的宽度
+            // 容器滚动为0，并且active栏目位于中间线左边？滚动值为0 ：当前容器滚动值 + （active栏目相对于中间线的值，有正负）
+            if (_container_left === 0 && _column_left <= midWidth) {
+              move = 0
+            } else {
+              move = _container_left + (_column_left - midWidth)
+            }
+            _container.animate({ 'scrollLeft': move }, 300)
+            setStore('navScrollLeft', move)       // 存计算后的值
+          }
+        })
+      },
+      // 滚动恢复
+      scrollRecover() {
+        let move = getStore('navScrollLeft')          // 取计算后的值
+        if (move) {
+          this.$nextTick(() => {
+            $('.nav_ul').scrollLeft(move)
+          })
+        }
+      },
+      goTop() {
+        $(`#index .${this.indexActive}`).animate({scrollTop: 0})
+      },
+      //显示详情页
+      showDetail(item){
+        this.SAVE_NEWS(item);
+        this.preventRepeat = false;
+        this.$router.push('/news/newsDetail');
+      },
+    },
+    // activated钩子是要在keep-alive下才能使用
+    activated() {
+      this.scrollRecover()
     }
-}
+  }
 
 </script>
-
-<style lang="scss" scoped>
-    @import 'src/style/mixin';
-	.link_search{
-		left: .8rem;
-		@include wh(.9rem, .9rem);
-		@include ct;
-	}
-	.msite_title{
-		@include center;
-        width: 50%;
-        color: #fff;
-        text-align: center;
-        margin-left: -0.5rem;
-        .title_text{
-            @include sc(0.8rem, #fff);
-            text-align: center;
-            display: block;
+<style lang='stylus'>
+  small_height=1.96875rem
+  larger_height=4.6875rem
+  /*分类*/
+  #indexHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    overflow: hidden;
+    nav {
+      margin-top: 2rem;
+      position: relative;
+      background-color: white;
+      height: 44px;
+      line-height: 44px;
+      border-bottom: 1px solid #ddd;
+      /*导航*/
+      .nav_ul {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        &::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
         }
-	}
-	.msite_nav{
-		padding-top: 2.1rem;
-		background-color: #fff;
-		border-bottom: 0.025rem solid $bc;
-		height: 10.6rem;
-		.swiper-container{
-			@include wh(100%, auto);
-			padding-bottom: 0.6rem;
-			.swiper-pagination{
-				bottom: 0.2rem;
-			}
-		}
-		.fl_back{
-			@include wh(100%, 100%);
-		}
-	}
-	.food_types_container{
-		display:flex;
-		flex-wrap: wrap;
-		.link_to_food{
-			width: 25%;
-			padding: 0.3rem 0rem;
-			@include fj(center);
-			figure{
-				img{
-					margin-bottom: 0.3rem;
-					@include wh(1.8rem, 1.8rem);
-				}
-				figcaption{
-					text-align: center;
-					@include sc(0.55rem, #666);
-				}
-			}
-		}
-	}
-	.shop_list_container{
-		margin-top: .4rem;
-		border-top: 0.025rem solid $bc;
-		background-color: #fff;
-		.shop_header{
-			.shop_icon{
-				fill: #999;
-				margin-left: 0.6rem;
-				vertical-align: middle;
-				@include wh(0.6rem, 0.6rem);
-			}
-			.shop_header_title{
-				color: #999;
-				@include font(0.55rem, 1.6rem);
-			}
-		}
-	}
+        a {
+          display: inline-block;
+          padding-left: 10px;
+          padding-right: 10px;
+          margin-left: 5px;
+          height: 36px;
+          line-height: 36px;
+          font-weight: 300;
+          font-size: 0.65rem;
+          color: #505050;
+          white-space: nowrap;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, .3);
+          text-decoration: none;
+          &:last-child {
+            margin-right: 5px;
+          }
+          &.active {
+            color: #3190e8;
+            border-bottom: 2px solid #3190e8;
+          }
+        }
+      }
+      .nav_menu {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        .shadow {
+          position: absolute;
+          width: 10px;
+          height: 100%;
+          left: -10px;
+          background-size: contain;
+          background-color: rgba(244, 245, 246, .3);
+        }
+        .more_btn {
+          display: block;
+          width: 40px;
+          height: 100%;
+          background-size: 20px;
+          background-color: #f4f5f6;
+        }
+      }
+    }
+  }
 
+  /*资讯内容*/
+  .news-list{
+    padding-top:3.75rem;
+  }
+  img {
+  }
+  img[lazy=loading] {
+    height: 100%;
+  }
+  h3 {
+    white-space: normal;
+    font-size: 17px;
+    line-height: 21px;
+    color: #222;
+    font-weight: 400;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .small-pic-container {
+    margin:.3rem 0;
+    height: 5.75rem;
+    border:1px solid #3190e8;
+    font-size: 0;
+    & > div{
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .news_title {
+      width: 67%;
+      overflow: hidden;
+      h3 {
+        margin-right: 0.32rem;
+      }
+    }
+    .news_img {
+      width: 33%;
+      height: 100%;
+      overflow: hidden;
+      img {
+        width: 100%;
+        min-height:100%;
+      }
+    }
+  }
+  .oneLarge {
+    .news_img {
+      width: 100%;
+      margin-top: 0.16rem;
+      overflow: hidden;
+      height: larger_height;
+    }
+    img {
+      width: 100%;
+      min-height: larger_height;
+    }
+  }
+  .three-pics-container {
+    margin:.3rem 0;
+    height: 5.75rem;
+    background-color:#3190e8;
+    /*border:1px solid #3190e8;*/
+    .list_img {
+      width: 100%;
+      height:60%;
+      margin-top:2rem;
+      ul {
+        width: 100%;
+        /*display: flex;*/
+        font-size: 0;
+      }
+      li {
+        display: inline-block;
+        width: 33.3%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0!important;
+        /*flex: 1;*/
+      }
+      li:nth-child(2) {
+        padding: 0 2px;
+      }
+      img {
+        width: 100%;
+        min-height: small_height;
+      }
+    }
+  }
+  .video-container {
+      width: 100%;
+      border-bottom:1px solid rebeccapurple;
+    height:6rem;
+    border-bottom:1px solid blue;
+    .video_wrapper {
+      width: 100%;
+      height: larger_height;
+      position: relative;
+      overflow: hidden;
+      color: #999;
+      .video_info {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        img {
+          position: absolute;
+          width: 100%;
+          min-height: larger_height;
+          display: block;
+          left: 0;
+          top: 0;
+          z-index: 111;
+        }
+      }
+      .video_title {
+        position: absolute;
+        width: 100%;
+        height: 80px;
+        top: 0;
+        left: 0;
+        color: #fff;
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0, 0, 0, .5)), color-stop(100%, transparent));
+        z-index: 222;
+        p {
+          width: 100%;
+          font-size: 14px;
+          line-height: 24px;
+          padding: 8px 0.4rem 0;
+          margin: 0;
+          color: #fff!important;
+        }
+      }
+      .totalTime {
+        position: absolute;
+        display: inline-block;
+        width: 40px;
+        right: 5px;
+        bottom: 5px;
+        background: rgba(0, 0, 0, .5);
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 10px;
+        z-index: 222;
+      }
+      .playRound {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        left: 50%;
+        top: 50%;
+        margin-left: -25px;
+        margin-top: -25px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, .3);
+        z-index: 222;
+        border: 1px solid #fff;
+      }
+      .playSan {
+        position: absolute;
+        width: 0;
+        height: 0;
+        font-size: 0;
+        border: 16px solid white;
+        border-color: transparent transparent transparent rgba(255, 255, 255, .6);
+        left: 50%;
+        top: 50%;
+        margin-left: -5px;
+        margin-top: -16px;
+      }
+    }
+  }
+  #lookHere {
+    background: #f4f5f6;
+    border: none !important;
+    margin: 0 !important;
+    p {
+      font-size: 12px;
+      line-height: 18px;
+      color: #00939c;
+      text-align: center;
+      user-select: none;
+      margin: 0;
+      padding: 10px 0;
+    }
+  }
 </style>

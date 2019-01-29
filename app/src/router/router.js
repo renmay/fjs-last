@@ -15,6 +15,8 @@ const orderDetail = r => require.ensure([], () => r(require('../page/order/child
 const vipcard = r => require.ensure([], () => r(require('../page/vipcard/vipcard')), 'vipcard')
 const statistics = r => require.ensure([], () => r(require('../page/statistics/statistics')), 'statistics')
 const equipment = r => require.ensure([], () => r(require('../page/equipment/equipment')), 'equipment')
+const plant = r => require.ensure([], () => r(require('../page/plant/plant')), 'plant')
+const alarm = r => require.ensure([], () => r(require('../page/alarm/alarm')), 'alarm')
 const invoiceRecord = r => require.ensure([], () => r(require('../page/vipcard/children/invoiceRecord')), 'invoiceRecord')
 const useCart = r => require.ensure([], () => r(require('../page/vipcard/children/useCart')), 'useCart')
 const vipDescription = r => require.ensure([], () => r(require('../page/vipcard/children/vipDescription')), 'vipDescription')
@@ -272,6 +274,16 @@ export default [{
     {
       path: '/equipment',
       component: equipment,
+    },
+    //种植管理页
+    {
+      path: '/plant',
+      component: plant,
+    },
+    //预警管理页
+    {
+      path: '/alarm',
+      component: alarm,
     },
   ]
 }]
