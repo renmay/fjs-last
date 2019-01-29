@@ -13,6 +13,8 @@ const forget = r => require.ensure([], () => r(require('../page/forget/forget'))
 const order = r => require.ensure([], () => r(require('../page/order/order')), 'order')
 const orderDetail = r => require.ensure([], () => r(require('../page/order/children/orderDetail')), 'orderDetail')
 const vipcard = r => require.ensure([], () => r(require('../page/vipcard/vipcard')), 'vipcard')
+const statistics = r => require.ensure([], () => r(require('../page/statistics/statistics')), 'statistics')
+const equipment = r => require.ensure([], () => r(require('../page/equipment/equipment')), 'equipment')
 const invoiceRecord = r => require.ensure([], () => r(require('../page/vipcard/children/invoiceRecord')), 'invoiceRecord')
 const useCart = r => require.ensure([], () => r(require('../page/vipcard/children/useCart')), 'useCart')
 const vipDescription = r => require.ensure([], () => r(require('../page/vipcard/children/vipDescription')), 'vipDescription')
@@ -260,6 +262,16 @@ export default [{
         path: 'detail', //积分说明
         component: pointsDetail,
       },]
+    },
+    //数据统计页
+    {
+      path: '/statistics',
+      component: statistics,
+    },
+    //设备管理页
+    {
+      path: '/equipment',
+      component: equipment,
     },
   ]
 }]

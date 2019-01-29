@@ -9,26 +9,52 @@
       </router-link>
       <router-link to="/home" slot="msite-title" class="msite_title">
         <span class="title_text ellipsis">{{msiteTitle}}</span>
-      </router-link>
+      </router-link>c
     </head-top>
 
     <nav class="msite_nav">
-      <div class="swiper-container">
-        <div>
-
-        </div>
-        <div class="swiper-wrapper">
-          <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
-            <router-link
-              :to="{path: '/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId(foodItem.link)}}"
-              v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
-              <figure>
-                <img :src="imgBaseUrl + foodItem.image_url">
-                <figcaption>{{foodItem.title}}</figcaption>
-              </figure>
-            </router-link>
+      <div class="area_type_container">
+        <router-link to="/vipcard" class="area_type_item">
+          <div class="area_type_img">
+            <img src="../../images/areaType/area_icon1.png" alt="">
           </div>
-        </div>
+          <div class="area_type_text">
+            签到
+          </div>
+        </router-link>
+        <router-link to="/vipcard" class="area_type_item">
+          <div class="area_type_img">
+            <img src="../../images/areaType/area_icon2.png" alt="">
+          </div>
+          <div class="area_type_text">
+            数据统计
+          </div>
+        </router-link>
+        <router-link to="/equipment" class="area_type_item">
+          <div class="area_type_img">
+            <img src="../../images/areaType/area_icon3.png" alt="">
+          </div>
+          <div class="area_type_text">
+            设备管理
+          </div>
+        </router-link>
+        <router-link to="/vipcard" class="area_type_item">
+          <div class="area_type_img">
+            <img src="../../images/areaType/area_icon4.png" alt="">
+          </div>
+          <div class="area_type_text">
+            预警设置
+          </div>
+        </router-link>
+        <router-link to="/vipcard" class="area_type_item">
+          <div class="area_type_img">
+            <img src="../../images/areaType/area_icon5.png" alt="">
+          </div>
+          <div class="area_type_text">
+            种植管理
+          </div>
+        </router-link>
+
         <div class="swiper-pagination"></div>
       </div>
     </nav>
@@ -52,7 +78,7 @@
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
   import areaList from 'src/components/common/arealist'
-  import {msiteAddress, msiteFoodTypes, cityGuess} from 'src/service/getData'
+  import {msiteAddress, cityGuess} from 'src/service/getData'
   import 'src/plugins/swiper.min.js'
   import 'src/style/swiper.min.css'
 
@@ -61,7 +87,6 @@
       return {
         geohash: '', // city页面传递过来的地址geohash
         msiteTitle: '请选择地址...', // msite页面头部标题
-        foodTypes: [], // 食品分类列表
         hasGetData: false, //是否已经获取地理位置数据，成功之后再获取商铺列表信息
         imgBaseUrl: 'https://fuss10.elemecdn.com', //图片域名地址
       }
@@ -84,22 +109,6 @@
       this.hasGetData = true;
     },
     mounted() {
-      //获取导航食品类型列表
-      msiteFoodTypes(this.geohash).then(res => {
-        let resLength = res.length;
-        let resArr = [...res]; // 返回一个新的数组
-        let foodArr = [];
-        for (let i = 0, j = 0; i < resLength; i += 8, j++) {
-          foodArr[j] = resArr.splice(0, 8);
-        }
-        this.foodTypes = foodArr;
-      }).then(() => {
-        //初始化swiper
-        new Swiper('.swiper-container', {
-          pagination: '.swiper-pagination',
-          loop: true
-        });
-      })
     },
     components: {
       headTop,
@@ -152,12 +161,30 @@
     padding-top: 2.1rem;
     background-color: #fff;
     border-bottom: 0.025rem solid $bc;
-    height: 10.6rem;
-    .swiper-container {
-      @include wh(100%, auto);
-      padding-bottom: 0.6rem;
-      .swiper-pagination {
-        bottom: 0.2rem;
+    height: 5.8rem;
+    .area_type_container {
+      height: 100%;
+      .area_type_item {
+        width: 20%;
+        float: left;
+        padding: 0.4rem 0rem;
+      }
+      .area_type_text {
+        text-align: center;
+        color: #666;
+        font-size: 0.55rem;
+      }
+      .area_type_img {
+        width: 100%;
+        height: 1.8rem;
+        text-align: center;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        img {
+          width: 40%;
+          height: 70%;
+        }
       }
     }
     .fl_back {
