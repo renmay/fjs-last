@@ -32,12 +32,12 @@
 	    		<svg class="shop_icon">
 	    			<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shop"></use>
 	    		</svg>
-	    		<span class="shop_header_title">附近商家</span>
+	    		<span class="shop_header_title">热门商品</span>
 	    	</header>
 	    	<shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
     	</div>
     	<foot-guide></foot-guide>
-    </div>    
+    </div>
 </template>
 
 <script>

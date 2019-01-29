@@ -55,7 +55,7 @@
                     <el-button
                       size="mini"
                       type="Success"
-                      @click="addFood(scope.$index, scope.row)">添加食品</el-button>
+                      @click="addFood(scope.$index, scope.row)">添加商品</el-button>
                     <el-button
                       size="mini"
                       type="danger"

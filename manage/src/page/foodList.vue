@@ -11,28 +11,28 @@
                 <el-table-column type="expand">
                   <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
-                      <el-form-item label="食品名称">
+                      <el-form-item label="商品名称">
                         <span>{{ props.row.name }}</span>
                       </el-form-item>
                       <el-form-item label="餐馆名称">
                         <span>{{ props.row.restaurant_name }}</span>
                       </el-form-item>
-                      <el-form-item label="食品 ID">
+                      <el-form-item label="商品 ID">
                         <span>{{ props.row.item_id }}</span>
                       </el-form-item>
                       <el-form-item label="餐馆 ID">
                         <span>{{ props.row.restaurant_id }}</span>
                       </el-form-item>
-                      <el-form-item label="食品介绍">
+                      <el-form-item label="商品介绍">
                         <span>{{ props.row.description }}</span>
                       </el-form-item>
                       <el-form-item label="餐馆地址">
                         <span>{{ props.row.restaurant_address }}</span>
                       </el-form-item>
-                      <el-form-item label="食品评分">
+                      <el-form-item label="商品评分">
                         <span>{{ props.row.rating }}</span>
                       </el-form-item>
-                      <el-form-item label="食品分类">
+                      <el-form-item label="商品分类">
                         <span>{{ props.row.category_name }}</span>
                       </el-form-item>
                       <el-form-item label="月销量">
@@ -42,11 +42,11 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label="食品名称"
+                  label="商品名称"
                   prop="name">
                 </el-table-column>
                 <el-table-column
-                  label="食品介绍"
+                  label="商品介绍"
                   prop="description">
                 </el-table-column>
                 <el-table-column
@@ -75,15 +75,15 @@
                   :total="count">
                 </el-pagination>
             </div>
-            <el-dialog title="修改食品信息" v-model="dialogFormVisible">
+            <el-dialog title="修改商品信息" v-model="dialogFormVisible">
                 <el-form :model="selectTable">
-                    <el-form-item label="食品名称" label-width="100px">
+                    <el-form-item label="商品名称" label-width="100px">
                         <el-input v-model="selectTable.name" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="食品介绍" label-width="100px">
+                    <el-form-item label="商品介绍" label-width="100px">
                         <el-input v-model="selectTable.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="食品分类" label-width="100px">
+                    <el-form-item label="商品分类" label-width="100px">
 	                    <el-select v-model="selectIndex" :placeholder="selectMenu.label" @change="handleSelect">
 						    <el-option
 						      v-for="item in menuOptions"
@@ -93,7 +93,7 @@
 						    </el-option>
 						</el-select>
                     </el-form-item>
-                    <el-form-item label="食品图片" label-width="100px">
+                    <el-form-item label="商品图片" label-width="100px">
                         <el-upload
                           class="avatar-uploader"
                           :action="baseUrl + '/v1/addimg/food'"
@@ -244,7 +244,7 @@
                         })
                     })
                 }catch(err){
-                    console.log('获取食品种类失败', err);
+                    console.log('获取商品种类失败', err);
                 }
             },
             async getFoods(){
@@ -327,7 +327,7 @@
                     if (res.status == 1) {
                         this.$message({
                             type: 'success',
-                            message: '删除食品成功'
+                            message: '删除商品成功'
                         });
                         this.tableData.splice(index, 1);
                     }else{
@@ -338,7 +338,7 @@
                         type: 'error',
                         message: err.message
                     });
-                    console.log('删除食品失败')
+                    console.log('删除商品失败')
                 }
             },
             handleServiceAvatarScucess(res, file) {
@@ -369,7 +369,7 @@
                     if (res.status == 1) {
                         this.$message({
                             type: 'success',
-                            message: '更新食品信息成功'
+                            message: '更新商品信息成功'
                         });
                         this.getFoods();
                     }else{

@@ -93,20 +93,20 @@ export const searchplace = (cityid, value) => fetch('/v1/pois', {
 });
 
 /**
- * 获取当前店铺食品种类
+ * 获取当前店铺商品种类
  */
 
 export const getCategory = restaurant_id => fetch('/shopping/getcategory/' + restaurant_id);
 
 /**
- * 添加食品种类
+ * 添加商品种类
  */
 
 export const addCategory = data => fetch('/shopping/addcategory', data, 'POST');
 
 
 /**
- * 添加食品
+ * 添加商品
  */
 
 export const addFood = data => fetch('/shopping/addfood', data, 'POST');
@@ -149,13 +149,13 @@ export const updateResturant = data => fetch('/shopping/updateshop', data, 'POST
 export const deleteResturant = restaurant_id => fetch('/shopping/restaurant/' + restaurant_id, {}, 'DELETE');
 
 /**
- * 获取食品列表
+ * 获取商品列表
  */
 
 export const getFoods = data => fetch('/shopping/v2/foods', data);
 
 /**
- * 获取食品数量
+ * 获取商品数量
  */
 
 export const getFoodsCount = data => fetch('/shopping/v2/foods/count', data);
@@ -174,13 +174,13 @@ export const getMenu = data => fetch('/shopping/v2/menu', data);
 export const getMenuById = category_id => fetch('/shopping/v2/menu/' + category_id);
 
 /**
- * 更新食品信息
+ * 更新商品信息
  */
 
 export const updateFood = data => fetch('/shopping/v2/updatefood', data, 'POST');
 
 /**
- * 删除食品
+ * 删除商品
  */
 
 export const deleteFood = food_id => fetch('/shopping/v2/food/' + food_id, {}, 'DELETE');

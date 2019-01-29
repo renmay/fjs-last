@@ -3,10 +3,10 @@
      	<head-top></head-top>
         <el-row style="margin-top: 20px;">
   			<el-col :span="14" :offset="4">
-  				<header class="form_header">选择食品种类</header>
+  				<header class="form_header">选择商品种类</header>
 	  			<el-form :model="categoryForm" ref="categoryForm" label-width="110px" class="form">
 		  			<el-row class="category_select">
-		  				<el-form-item label="食品种类">
+		  				<el-form-item label="商品种类">
 			  				<el-select v-model="categoryForm.categorySelect" :placeholder="selectValue.label" style="width:100%;">
 							    <el-option
 							      	v-for="item in categoryForm.categoryList"
@@ -19,7 +19,7 @@
 					</el-row>
 					<el-row class="add_category_row" :class="showAddCategory? 'showEdit': ''">
 						<div class="add_category">
-							<el-form-item label="食品种类" prop="name">
+							<el-form-item label="商品种类" prop="name">
 								<el-input v-model="categoryForm.name"></el-input>
 							</el-form-item>
 							<el-form-item label="种类描述" prop="description">
@@ -33,21 +33,21 @@
 					<div class="add_category_button" @click="addCategoryFun">
 						<i class="el-icon-caret-top edit_icon" v-if="showAddCategory"></i>
 						<i class="el-icon-caret-bottom edit_icon" v-else slot="icon"></i>
-						<span>添加食品种类</span>
+						<span>添加商品种类</span>
 					</div>
 	  			</el-form>
-	  			<header class="form_header">添加食品</header>
+	  			<header class="form_header">添加商品</header>
 	  			<el-form :model="foodForm" :rules="foodrules" ref="foodForm" label-width="110px" class="form food_form">
-	  				<el-form-item label="食品名称" prop="name">
+	  				<el-form-item label="商品名称" prop="name">
 						<el-input v-model="foodForm.name"></el-input>
 					</el-form-item>
-					<el-form-item label="食品活动" prop="activity">
+					<el-form-item label="商品活动" prop="activity">
 						<el-input v-model="foodForm.activity"></el-input>
 					</el-form-item>
-					<el-form-item label="食品详情" prop="description">
+					<el-form-item label="商品详情" prop="description">
 						<el-input v-model="foodForm.description"></el-input>
 					</el-form-item>
-					<el-form-item label="上传食品图片">
+					<el-form-item label="上传商品图片">
 						<el-upload
 						  class="avatar-uploader"
 						  :action="baseUrl + '/v1/addimg/food'"
@@ -58,7 +58,7 @@
 						  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
 						</el-upload>
 					</el-form-item>
-					<el-form-item label="食品特点">
+					<el-form-item label="商品特点">
 						<el-select v-model="foodForm.attributes" multiple placeholder="请选择">
 						    <el-option
 						      	v-for="item in attributes"
@@ -68,7 +68,7 @@
 						    </el-option>
 					 	</el-select>
 					</el-form-item>
-					<el-form-item label="食品规格">
+					<el-form-item label="商品规格">
 						<el-radio class="radio" v-model="foodSpecs" label="one">单规格</el-radio>
   						<el-radio class="radio" v-model="foodSpecs" label="more">多规格</el-radio>
 					</el-form-item>
@@ -109,7 +109,7 @@
 						</el-table>
 					</el-row>
 					<el-form-item>
-						<el-button type="primary" @click="addFood('foodForm')">确认添加食品</el-button>
+						<el-button type="primary" @click="addFood('foodForm')">确认添加商品</el-button>
 					</el-form-item>
 	  			</el-form>
 	  			<el-dialog title="添加规格" v-model="dialogFormVisible">
@@ -164,7 +164,7 @@
     			},
     			foodrules: {
     				name: [
-						{ required: true, message: '请输入食品名称', trigger: 'blur' },
+						{ required: true, message: '请输入商品名称', trigger: 'blur' },
 					],
     			},
     			attributes: [{
@@ -199,7 +199,7 @@
     			this.restaurant_id = Math.ceil(Math.random()*10);
     			this.$msgbox({
 		          title: '提示',
-		          message: '添加食品需要选择一个商铺，先去就去选择商铺吗？',
+		          message: '添加商品需要选择一个商铺，先去就去选择商铺吗？',
 		          showCancelButton: true,
 		          confirmButtonText: '确定',
 		          cancelButtonText: '取消',

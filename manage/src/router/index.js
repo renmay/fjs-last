@@ -53,7 +53,7 @@ const routes = [
 		},{
 			path: '/foodList',
 			component: foodList,
-			meta: ['数据管理', '食品列表'],
+			meta: ['数据管理', '商品列表'],
 		},{
 			path: '/orderList',
 			component: orderList,
